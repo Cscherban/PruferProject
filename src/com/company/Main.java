@@ -3,12 +3,10 @@ package com.company;
 import java.util.List;
 import java.util.ArrayList;
 public class Main {
-    private int size = 0;
 
-
-    private static Node getNode(Node head, int data){
+    private Node getNode(Node head, int data){
         if(head.parent != null){
-            System.out.print("please give me a \"root\", otherwise the method might not terminate")
+            System.out.print("please give me a \"root\", otherwise the method might not terminate");
         }
         if(head.data == data){
             return head;
@@ -30,7 +28,7 @@ public class Main {
         int offset = 0;
         int i = 0;
         do{
-           if(offset ==0 && (n < arr[i] || arr[i] == 0)){
+           if(offset ==0 && (n > arr[i] || arr[i] == 0)){
                newArr[i] = n;
                offset = 1;
            }
@@ -41,27 +39,78 @@ public class Main {
         return newArr;
     }
 
-
-    private Node pruferHelper(Node grandParent, int[] nodeList, int[] prufer){
-        return null;
+    private boolean contains(int n, int[] arr){
+        for(int i :arr){
+            if(n == i){
+                return true;
+            }
+        }
+        return false;
     }
 
 
-    public static Node treeFromPrufer(int m, int prufer[]){
-        int nodeList[] = new int[m];
+    private int[][] arrayRepresentation(int m, int lastLeaf ,int[] leafList, int[] prufer){
+       int[][] arr = new int[m][m];
+       for(int i = 0; i < prufer.length; i++){
+           int index = prufer[i];
+           prufer[i] = 0;
+
+           int smallest = leafList[lastLeaf];
+           leafList[lastLeaf--] = 0;
+
+           int insertIndex = 0;
+           while(arr[index][insertIndex] != 0 && insertIndex < m){
+               insertIndex++;
+           }
+           arr[index][insertIndex] = smallest;
+
+           if(!contains(index,prufer)){
+               leafList = insertVertexData(index,leafList);
+               lastLeaf++;
+           }
+       }
+       return arr;
+
+    }
+
+    private Node treeFromArrayRepresentation(int[][] array, int index, Node parent){
+        if(array[index][0] == 0){
+            return new Node(index + 1, parent);
+        }else{
+            Node n = new Node(index + 1, parent);
+            for(int i = 0; i < array[index].length && array[index][i] != 0; i++){
+                n.children.add(treeFromArrayRepresentation(array,array[index][i] - 1,n));
+            }
+            return n;
+        }
+    }
+
+
+    public Node treeFromPrufer(int m, int prufer[]){
+        int leafList[] = new int[m];
         boolean found;
         int index = 0;
-        for(int i = 1; i <= m; i++){
+        for(int i = m; i >= 1; i--){
             found = false;
             for(int j = 0; !found && j < prufer.length && prufer[j] != 0; j++ ){
                 found = prufer[j] == i;
             }
             if(!found){
-               nodeList[index++] = i;
+               leafList[index++] = i;
             }
         }
 
-        return pruferHelper();
+        int[][] arrayRepresentation = arrayRepresentation( m, index -1,leafList,prufer);
+
+        int parentIndex = 0;
+        while(arrayRepresentation[parentIndex][0] == 0 && parentIndex < m){
+            parentIndex++;
+        }
+        if(parentIndex == m){
+            return null;
+        }
+
+        return treeFromArrayRepresentation(arrayRepresentation,parentIndex, null);
 
 
 
