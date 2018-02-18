@@ -25,8 +25,45 @@ public class Main {
         return null;
     }
 
+    private int[] insertVertexData(int n, int arr[]){
+        int[] newArr = new int[arr.length];
+        int offset = 0;
+        int i = 0;
+        do{
+           if(offset ==0 && (n < arr[i] || arr[i] == 0)){
+               newArr[i] = n;
+               offset = 1;
+           }
+           newArr[i + offset] = arr[i];
 
-    public static Node treeFromPrufer(){
+        }while(newArr[i++ + offset] != 0 || i < arr.length);
+
+        return newArr;
+    }
+
+
+    private Node pruferHelper(Node grandParent, int[] nodeList, int[] prufer){
+        return null;
+    }
+
+
+    public static Node treeFromPrufer(int m, int prufer[]){
+        int nodeList[] = new int[m];
+        boolean found;
+        int index = 0;
+        for(int i = 1; i <= m; i++){
+            found = false;
+            for(int j = 0; !found && j < prufer.length && prufer[j] != 0; j++ ){
+                found = prufer[j] == i;
+            }
+            if(!found){
+               nodeList[index++] = i;
+            }
+        }
+
+        return pruferHelper();
+
+
 
     }
 
@@ -61,9 +98,10 @@ public class Main {
 
         private Node(int data, Node parent){
             this(data,parent,null);
+            children = new ArrayList<>();
         }
         private Node(int data){
-            this(data,null,null);
+            this(data,null);
         }
 
     }
